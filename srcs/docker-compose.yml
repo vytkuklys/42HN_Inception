@@ -1,0 +1,66 @@
+version: '3.7'
+
+services:
+    mariadb:
+        container_name: mariadb
+        build: ./requirements/mariadb
+        ports:
+            - "${DB_PORT}::${DB_PORT}"
+        networks:
+            - magic
+        volumes:
+            - mariadb_volume:/var/lib/mysql
+        restart: always
+    wordpress:
+        container_name: wordpress
+        build: ./requirements/wordpress
+        ports:
+            - "${WP_PORT}:${WP_PORT}"
+        networks:
+            - magic
+        volumes:
+            - wordpress_volume:/var/www/wordpress
+        environment:
+            - DB_NAME=${DB_NAME}
+            - HOST_NAME=${HOST_NAME}
+            - USER_NAME=${USER_NAME}
+            - USER_PASS=${USER_PASS}
+        depends_on:
+            - mariadb
+        restart: always
+    nginx:
+        container_name: nginx
+        build: ./requirements/nginx
+        ports:
+            - "${NGINX_PORT}:${NGINX_PORT}"
+        networks:
+            - magic
+        volumes:
+            - ${WP_PATH}:/var/www/wordpress
+        environment:
+            - DB_NAME=${DB_NAME}
+            - USER_NAME=${USER_NAME}
+            - USER_PASS=${USER_PASS}
+            - ROOT_PASS=${ROOT_PASS}
+        depends_on:
+          - wordpress
+        restart: always
+
+networks:
+    magic:
+
+volumes:
+    mariadb_volume:
+        external: false
+        driver: local
+        driver_opts:
+            device: ${DB_PATH}
+            type: none
+            o: bind
+    wordpress_volume:
+        external: false
+        driver: local
+        driver_opts:
+            device: ${WP_PATH}
+            type: none
+            o: bind
