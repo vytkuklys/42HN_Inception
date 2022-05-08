@@ -4,6 +4,7 @@ services:
     mariadb:
         container_name: mariadb
         build: ./requirements/mariadb
+        image: mariadb
         ports:
             - "${DB_PORT}::${DB_PORT}"
         networks:
@@ -14,6 +15,7 @@ services:
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
+        image: wordpress
         ports:
             - "${WP_PORT}:${WP_PORT}"
         networks:
@@ -31,6 +33,7 @@ services:
     nginx:
         container_name: nginx
         build: ./requirements/nginx
+        image: nginx
         ports:
             - "${NGINX_PORT}:${NGINX_PORT}"
         networks:
